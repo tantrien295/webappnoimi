@@ -10,7 +10,13 @@ class Config:
 
     # Cấu hình database - Luôn sử dụng DATABASE_URL từ biến môi trường
     # VERCEL sẽ tự động cung cấp DATABASE_URL mà chúng ta đã cấu hình
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    database_url = os.getenv('DATABASE_URL')
+    if database_url and database_url.startswith('postgresql://'):
+        # Thay thế postgresql:// bằng postgresql+psycopg:// để sử dụng driver psycopg
+        SQLALCHEMY_DATABASE_URI = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
+    else:
+        SQLALCHEMY_DATABASE_URI = database_url
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Cấu hình upload - UPLOAD_FOLDER sẽ được quản lý trong app.py
