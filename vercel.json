@@ -4,7 +4,10 @@
         {
             "src": "wsgi.py",
             "use": "@vercel/python",
-            "config": { "maxLambdaSize": "15mb", "runtime": "python3.11" }
+            "config": { 
+                "maxLambdaSize": "15mb", 
+                "runtime": "python3.11"
+            }
         }
     ],
     "routes": [
@@ -14,6 +17,8 @@
         }
     ],
     "env": {
-        "DATABASE_URL": "@database_url"
+        "DATABASE_URL": "@database_url",
+        "SECRET_KEY": "@secret_key",
+        "FLASK_ENV": "production"
     }
 } 

@@ -906,6 +906,10 @@ def settings_page():
 
     return render_template('settings/index.html', settings=settings)
 
+# Export handler cho Vercel
+handler = app
+
+# Chỉ chạy server khi chạy trực tiếp file này
 if __name__ == '__main__':
     app.run(debug=True)
 
