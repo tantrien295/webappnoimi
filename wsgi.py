@@ -1,4 +1,5 @@
 from app import app
 
-if __name__ == "__main__":
-    app.run() 
+# Bỏ qua khối if __name__ == "__main__": cho Vercel
+# if __name__ == "__main__":
+# app.run() 
