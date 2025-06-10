@@ -1,9 +1,6 @@
 import os
-from dotenv import load_dotenv
 
-# Load biến môi trường từ file .env (chỉ cho local dev)
-if os.path.exists('.env'):
-    load_dotenv()
+# Không cần load_dotenv() trên Vercel, biến môi trường được cung cấp trực tiếp
 
 class Config:
     # Cấu hình cơ bản
