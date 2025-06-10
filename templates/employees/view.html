@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Chi tiết nhân viên{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">Chi tiết nhân viên: {{ employee.name }}</h1>
+        <div class="flex space-x-3">
+            <a href="{{ url_for('employee_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Quay lại danh sách
+            </a>
+            <a href="{{ url_for('employee_edit', id=employee.id) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                </svg>
+                Chỉnh sửa
+            </a>
+        </div>
+    </div>
+
+    <!-- Employee Details -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Thông tin cá nhân -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Thông tin cá nhân</h2>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">ID:</p>
+                    <p class="mt-1 text-base text-gray-900">{{ employee.id }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Họ và tên:</p>
+                    <p class="mt-1 text-base text-gray-900">{{ employee.name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Số điện thoại:</p>
+                    <p class="mt-1 text-base text-gray-900">{{ employee.phone or 'N/A' }}</p>
+                </div>
+                {% if employee.birth_date %}
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Ngày sinh:</p>
+                    <p class="mt-1 text-base text-gray-900">{{ employee.birth_date.strftime('%d/%m/%Y') }}</p>
+                </div>
+                {% endif %}
+                {% if employee.address %}
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Địa chỉ:</p>
+                    <p class="mt-1 text-base text-gray-900">{{ employee.address }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Thông tin công việc -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Thông tin công việc</h2>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Ngày tạo:</p>
+                    <p class="mt-1 text-base text-gray-900">{{ employee.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Cập nhật lần cuối:</p>
+                    <p class="mt-1 text-base text-gray-900">{{ employee.updated_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ghi chú -->
+    {% if employee.notes %}
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Ghi chú</h2>
+        <p class="text-base text-gray-900">{{ employee.notes }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Service History for this Employee -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <h2 class="text-xl font-semibold text-gray-800 p-6 border-b border-gray-200">Lịch sử làm việc của nhân viên</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dịch vụ</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ghi chú</th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Thao tác</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for history in service_histories_pagination.items %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ history.service_date.strftime('%d/%m/%Y %H:%M') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <a href="{{ url_for('customer_view', id=history.customer.id) }}" class="text-blue-600 hover:text-blue-800">
+                                {{ history.customer.name }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <a href="{{ url_for('service_view', id=history.service.id) }}" class="text-blue-600 hover:text-blue-800">
+                                {{ history.service.name }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ history.price | int | format_number }} VNĐ
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if history.status == 'completed' %}
+                                    bg-green-100 text-green-800
+                                {% elif history.status == 'cancelled' %}
+                                    bg-red-100 text-red-800
+                                {% else %}
+                                    bg-yellow-100 text-yellow-800
+                                {% endif %}">
+                                {{ history.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600 line-clamp-2">
+                            {{ history.notes or '' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-3">
+                                <a href="{{ url_for('service_history_edit', id=history.id) }}" 
+                                    class="text-indigo-600 hover:text-indigo-900" title="Chỉnh sửa">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                        <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                                <button type="button" class="text-red-600 hover:text-red-900 focus:outline-none delete-history-button" data-history-id="{{ history.id }}" title="Xóa">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if service_histories_pagination.items | length == 0 %}
+            <p class="p-6 text-center text-gray-500">Chưa có lịch sử làm việc nào cho nhân viên này.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Delete History Confirmation Modal -->
+    <div id="delete-history-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Xác nhận xóa lịch sử</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Bạn có chắc chắn muốn xóa lịch sử dịch vụ này?
+                        <br/>Lưu ý: Hành động này không thể hoàn tác!
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3 grid grid-cols-2 gap-4">
+                    <button id="cancel-delete-history" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:text-sm">
+                        Hủy
+                    </button>
+                    <button id="confirm-delete-history" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm">
+                        Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if service_histories_pagination.pages > 1 %}
+    <div class="flex justify-center space-x-2 mt-6">
+        {% if service_histories_pagination.has_prev %}
+        <a href="{{ url_for('employee_view', id=employee.id, page=service_histories_pagination.prev_num) }}"
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Trang trước
+        </a>
+        {% else %}
+        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white opacity-50 cursor-not-allowed">
+            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Trang trước
+        </span>
+        {% endif %}
+
+        {% for page_num in service_histories_pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                {% if service_histories_pagination.page == page_num %}
+                    <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-500 text-white text-sm font-medium rounded-md">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('employee_view', id=employee.id, page=page_num) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if service_histories_pagination.has_next %}
+        <a href="{{ url_for('employee_view', id=employee.id, page=service_histories_pagination.next_num) }}"
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Trang sau
+            <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+        {% else %}
+        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white opacity-50 cursor-not-allowed">
+            Trang sau
+            <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteHistoryButtons = document.querySelectorAll('.delete-history-button');
+        const deleteHistoryModal = document.getElementById('delete-history-modal');
+        const cancelDeleteHistoryButton = document.getElementById('cancel-delete-history');
+        const confirmDeleteHistoryButton = document.getElementById('confirm-delete-history');
+        let historyIdToDelete = null;
+
+        deleteHistoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                historyIdToDelete = this.dataset.historyId;
+                deleteHistoryModal.classList.remove('hidden');
+            });
+        });
+
+        cancelDeleteHistoryButton.addEventListener('click', function() {
+            deleteHistoryModal.classList.add('hidden');
+            historyIdToDelete = null;
+        });
+
+        confirmDeleteHistoryButton.addEventListener('click', function() {
+            if (historyIdToDelete) {
+                // Construct the form and submit it dynamically
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ url_for('service_history_delete', id=0) }}`.replace('/0', `/${historyIdToDelete}`);
+                document.body.appendChild(form);
+                form.submit();
+            }
+            deleteHistoryModal.classList.add('hidden');
+            historyIdToDelete = null;
+        });
+
+        deleteHistoryModal.addEventListener('click', function(event) {
+            if (event.target === deleteHistoryModal) {
+                deleteHistoryModal.classList.add('hidden');
+                historyIdToDelete = null;
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

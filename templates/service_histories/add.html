@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+
+{% block title %}Thêm lịch sử dịch vụ - Quản lý Salon{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+        <div class="mb-4 md:mb-0">
+            <h1 class="text-2xl font-bold text-gray-800">Thêm lịch sử dịch vụ</h1>
+            <p class="text-sm text-gray-600 mt-1">Hoàn tất thông tin để thêm lịch sử dịch vụ mới</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{{ url_for('service_history_list') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Quay lại danh sách
+            </a>
+            <button type="submit" form="serviceHistoryForm" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <i class="fas fa-save mr-2"></i> Lưu lịch sử
+            </button>
+        </div>
+    </div>
+
+    <form id="serviceHistoryForm" method="POST" action="{{ url_for('service_history_add', customer_id=customer_preselected.id if customer_preselected else None) }}" class="needs-validation bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" novalidate enctype="multipart/form-data">
+        <div class="p-6 space-y-8">
+            <!-- Thông tin cơ bản -->
+            <div class="space-y-6">
+                <!-- Thông tin khách hàng và dịch vụ -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Thông tin khách hàng -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center">
+                                <i class="fas fa-user-circle text-blue-600 mr-2"></i>
+                                Khách hàng
+                            </h3>
+                            {% if customer_preselected %}
+                            <div class="bg-gray-50 p-4 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-gray-900 text-lg">{{ customer_preselected.name }}</p>
+                                    <p class="text-gray-600 text-sm mt-1">Điện thoại: {{ customer_preselected.phone_number }}</p>
+                                </div>
+                                <!-- Link đổi khách hàng (chưa có chức năng, chỉ là placeholder) -->
+                                <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+                                    <i class="fas fa-pencil-alt mr-1"></i> Đổi
+                                </a>
+                            </div>
+                            <input type="hidden" name="customer_id" value="{{ customer_preselected.id }}">
+                            {% else %}
+                            <select id="customer" name="customer_id" required
+                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                <option value="">Chọn khách hàng</option>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <p class="mt-1 text-sm text-red-600 hidden invalid-feedback-js">Vui lòng chọn khách hàng</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Thông tin dịch vụ -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center">
+                                <i class="fas fa-cut text-indigo-600 mr-2"></i>
+                                Dịch vụ
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <select id="service_id" name="service_id" required
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <option value="">Chọn dịch vụ</option>
+                                        {% for service in services %}
+                                        <option value="{{ service.id }}">
+                                            {{ service.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <p class="mt-1 text-sm text-red-600 hidden invalid-feedback-js">Vui lòng chọn dịch vụ</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="service_date" class="block text-sm font-medium text-gray-700 mb-1">Ngày sử dụng <span class="text-red-500">*</span></label>
+                                        <input type="date" id="service_date" name="service_date" 
+                                               value="{{ now.strftime('%Y-%m-%d') }}" required
+                                               class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <p class="mt-1 text-sm text-red-600 hidden invalid-feedback-js">Vui lòng chọn ngày sử dụng</p>
+                                    </div>
+
+                                    <div>
+                                        <label for="employee_id" class="block text-sm font-medium text-gray-700 mb-1">Nhân viên <span class="text-red-500">*</span></label>
+                                        <select id="employee_id" name="employee_id" required
+                                                class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            <option value="">Chọn nhân viên</option>
+                                            {% for emp in employees %}
+                                            <option value="{{ emp.id }}">
+                                                {{ emp.name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                        <p class="mt-1 text-sm text-red-600 hidden invalid-feedback-js">Vui lòng chọn nhân viên</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Thanh toán -->
+                    <div class="bg-green-50/50 p-5 rounded-lg border border-green-100">
+                        <h3 class="text-lg font-medium text-green-800 mb-4 flex items-center">
+                            <i class="fas fa-credit-card text-green-500 mr-2"></i>
+                            Thông tin thanh toán
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Giá dịch vụ <span class="text-red-500">*</span></label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <input type="text" id="amount" name="amount" 
+                                           value="0" required
+                                           oninput="formatCurrency(this)"
+                                           class="focus:ring-green-500 focus:border-green-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md pl-3">
+                                    <input type="hidden" id="amount_raw" name="amount_raw" value="0">
+                                    <div class="absolute inset-y-0 right-0 flex items-center">
+                                        <span class="text-gray-500 sm:text-sm pr-3">VND</span>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-sm text-red-600 hidden invalid-feedback-js">Vui lòng nhập giá dịch vụ</p>
+                            </div>
+
+                            <div>
+                                <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-1">Phương thức thanh toán <span class="text-red-500">*</span></label>
+                                <input type="text" id="payment_method" name="payment_method" 
+                                       value="Tiền mặt" required
+                                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                                       placeholder="Ví dụ: Tiền mặt, Chuyển khoản...">
+                                <p class="mt-1 text-sm text-red-600 hidden invalid-feedback-js">Vui lòng nhập phương thức thanh toán</p>
+                            </div>
+
+                            <div>
+                                <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                                <textarea id="notes" name="notes" rows="3"
+                                    class="shadow-sm focus:ring-green-500 focus:border-green-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hình ảnh -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-images text-purple-600 mr-2"></i>
+                                    Hình ảnh đính kèm
+                                    <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">0 ảnh</span>
+                                </h3>
+                                <p class="text-sm text-gray-500 mt-1">Kéo thả ảnh vào đây hoặc nhấn nút bên dưới</p>
+                            </div>
+                            <div class="relative flex-shrink-0">
+                                <input type="file" id="images" name="images" class="hidden" accept="image/*" multiple>
+                                <label for="images" class="inline-flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-5 rounded-lg transition-colors duration-200 cursor-pointer shadow-sm">
+                                    <i class="fas fa-upload"></i>
+                                    <span>Thêm ảnh</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="previewImages" class="flex flex-wrap gap-4">
+                            <div id="emptyState" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-purple-400 transition-colors duration-200 bg-gray-50">
+                                <div class="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-images text-2xl text-purple-600"></i>
+                                </div>
+                                <h4 class="text-lg font-medium text-gray-700 mb-2">Chưa có hình ảnh nào</h4>
+                                <p class="text-sm text-gray-500 mb-4 max-w-md mx-auto">Kéo thả ảnh vào đây hoặc nhấn nút bên dưới</p>
+                                <label for="images" class="inline-flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-5 rounded-lg transition-colors duration-200 cursor-pointer shadow-sm">
+                                    <i class="fas fa-upload"></i>
+                                    <span>Thêm ảnh</span>
+                                </label>
+                                <p class="text-xs text-gray-400 mt-3">Định dạng hỗ trợ: JPG, PNG, GIF</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% block scripts %}
+{% raw %}
+<script>
+// Định dạng tiền tệ với dấu phân cách hàng nghìn
+function formatCurrency(input) {
+    let value = input.value.replace(/\./g, '').replace(/\D/g, '');
+    let rawInput = document.getElementById(input.id + '_raw');
+
+    if (rawInput) {
+        rawInput.value = value; // Lưu giá trị thô
+    }
+
+    if (value) {
+        input.value = new Intl.NumberFormat('vi-VN').format(value);
+    } else {
+        input.value = '';
+    }
+}
+
+// Xử lý khi tải trang để định dạng giá trị ban đầu
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('amount');
+    if (amountInput) {
+        formatCurrency(amountInput);
+    }
+});
+
+// Kích hoạt validation của Bootstrap (thay đổi cho Tailwind)
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            let isValid = true;
+            form.querySelectorAll('select[required], input[required]:not([type="hidden"]), textarea[required]').forEach(function(input) {
+                if (!input.value) {
+                    input.classList.add('border-red-500');
+                    // Tìm phần tử invalid-feedback-js kế tiếp
+                    let errorElement = input.nextElementSibling;
+                    while (errorElement && !errorElement.classList.contains('invalid-feedback-js')) {
+                        errorElement = errorElement.nextElementSibling;
+                    }
+                    if (errorElement) {
+                        errorElement.classList.remove('hidden');
+                    }
+                    isValid = false;
+                } else {
+                    input.classList.remove('border-red-500');
+                    let errorElement = input.nextElementSibling;
+                    while (errorElement && !errorElement.classList.contains('invalid-feedback-js')) {
+                        errorElement = errorElement.nextElementSibling;
+                    }
+                    if (errorElement) {
+                        errorElement.classList.add('hidden');
+                    }
+                }
+            });
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+
+    // Custom validation for select and input elements on change
+    document.querySelectorAll('select[required], input[required]:not([type="hidden"])').forEach(function(input) {
+        input.addEventListener('change', function() {
+            if (this.value) {
+                this.classList.remove('border-red-500');
+                let errorElement = this.nextElementSibling;
+                while (errorElement && !errorElement.classList.contains('invalid-feedback-js')) {
+                    errorElement = errorElement.nextElementSibling;
+                }
+                if (errorElement) {
+                    errorElement.classList.add('hidden');
+                }
+            } else {
+                this.classList.add('border-red-500');
+                let errorElement = this.nextElementSibling;
+                while (errorElement && !errorElement.classList.contains('invalid-feedback-js')) {
+                    errorElement = errorElement.nextElementSibling;
+                }
+                if (errorElement) {
+                    errorElement.classList.remove('hidden');
+                }
+            }
+        });
+    });
+})();
+
+let uploadedFiles = []; // Array to store File objects for new uploads
+
+function renderImagesPreview() {
+    const previewContainer = document.getElementById('previewImages');
+    const emptyState = document.getElementById('emptyState');
+    previewContainer.innerHTML = ''; // Clear existing previews
+
+    if (uploadedFiles.length > 0) {
+        emptyState.classList.add('hidden');
+        document.querySelector('.ml-2.px-2.py-0\\.5.bg-gray-100.text-gray-600.text-xs.font-medium.rounded-full').textContent = uploadedFiles.length + ' ảnh';
+
+        uploadedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'relative group w-1/5 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 hover:border-blue-200 transition-all duration-200 bg-gray-50';
+                imgDiv.dataset.index = index; // Store index to remove later
+
+                imgDiv.innerHTML = `
+                    <img src="${ev.target.result}"
+                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                         alt="Hình ảnh dịch vụ"
+                         loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3">
+                        <div class="flex justify-end">
+                            <button type="button"
+                                    onclick="removeNewImage(${index})"
+                                    class="w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors duration-200 shadow-lg"
+                                    title="Xóa ảnh">
+                                <i class="fas fa-trash-alt text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="relative overflow-hidden">
+                            <span class="w-full flex items-center justify-center space-x-2 bg-white/90 text-gray-800 text-xs font-medium py-2 px-3 rounded-lg">Đã chọn</span>
+                        </div>
+                    </div>
+                `;
+                previewContainer.appendChild(imgDiv);
+            };
+            reader.readAsDataURL(file);
+        });
+    } else {
+        emptyState.classList.remove('hidden');
+        document.querySelector('.ml-2.px-2.py-0\\.5.bg-gray-100.text-gray-600.text-xs.font-medium.rounded-full').textContent = '0 ảnh';
+    }
+}
+
+function removeNewImage(indexToRemove) {
+    uploadedFiles.splice(indexToRemove, 1); // Remove file from array
+    renderImagesPreview(); // Re-render preview
+    // Update the file input to reflect the changes for submission
+    const dataTransfer = new DataTransfer();
+    uploadedFiles.forEach(file => dataTransfer.items.add(file));
+    document.getElementById('images').files = dataTransfer.files;
+}
+
+document.getElementById('images').addEventListener('change', function(e) {
+    // Lấy tất cả các tệp mới và thêm vào uploadedFiles
+    uploadedFiles = uploadedFiles.concat(Array.from(e.target.files));
+    renderImagesPreview();
+});
+
+// Handle drag and drop
+const dropArea = document.getElementById('emptyState');
+
+if (dropArea) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.add('border-blue-400'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.remove('border-blue-400'), false);
+    });
+
+    dropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        // Convert FileList to Array and add to uploadedFiles
+        // Thay vì ghi đè, chúng ta sẽ thêm vào danh sách hiện có
+        uploadedFiles = uploadedFiles.concat(Array.from(files));
+        
+        // Update the actual file input to reflect the dropped files
+        const dataTransfer = new DataTransfer();
+        uploadedFiles.forEach(file => dataTransfer.items.add(file));
+        document.getElementById('images').files = dataTransfer.files;
+
+        renderImagesPreview();
+    }
+}
+</script>
+{% endraw %}
+{% endblock scripts %}
+{% endblock content %} 

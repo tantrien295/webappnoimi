@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Chi tiết lịch sử dịch vụ - Quản lý Salon{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1 class="h3 mb-0">Chi tiết lịch sử dịch vụ</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('service_history_list') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+        <a href="{{ url_for('service_history_edit', id=history.id) }}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Chỉnh sửa
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Thông tin cơ bản -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thông tin cơ bản</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 150px;">Mã lịch sử:</th>
+                        <td>#{{ history.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Khách hàng:</th>
+                        <td>
+                            <a href="{{ url_for('customer_view', id=history.customer.id) }}">
+                                {{ history.customer.name }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Dịch vụ:</th>
+                        <td>
+                            <a href="{{ url_for('service_view', id=history.service.id) }}">
+                                {{ history.service.name }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Nhân viên:</th>
+                        <td>
+                            <a href="{{ url_for('employee_view', id=history.employee.id) }}">
+                                {{ history.employee.name }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ngày sử dụng:</th>
+                        <td>{{ history.service_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin thanh toán -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thông tin thanh toán</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 150px;">Giá dịch vụ:</th>
+                        <td>{{ "{:,.0f}".format(history.price) }}đ</td>
+                    </tr>
+                    <tr>
+                        <th>Phương thức:</th>
+                        <td>
+                            {% if history.payment_method == 'cash' %}
+                            <span class="badge bg-success">Tiền mặt</span>
+                            {% elif history.payment_method == 'card' %}
+                            <span class="badge bg-primary">Thẻ</span>
+                            {% else %}
+                            <span class="badge bg-info">Chuyển khoản</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ngày tạo:</th>
+                        <td>{{ history.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Cập nhật lần cuối:</th>
+                        <td>{{ history.updated_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ghi chú -->
+{% if history.notes %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Ghi chú</h5>
+    </div>
+    <div class="card-body">
+        <p class="mb-0">{{ history.notes }}</p>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %} 

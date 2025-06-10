@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Danh sách nhân viên{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Danh sách nhân viên</h1>
+        <a href="{{ url_for('employee_add') }}" class="btn-primary">
+            <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Thêm nhân viên
+        </a>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="bg-white rounded-lg shadow p-4">
+        <form method="GET" class="flex flex-wrap items-center gap-4">
+            <div class="flex-grow min-w-[200px]">
+                <input type="text" name="search" value="{{ request.args.get('search', '') }}" 
+                    class="form-input w-full" placeholder="Tìm kiếm theo tên, số điện thoại...">
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="btn-primary">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Tìm kiếm
+                </button>
+                <a href="{{ url_for('employee_list') }}" class="btn-secondary">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Làm mới
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Employee List -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tên</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Số điện thoại</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vị trí</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Trạng thái</th>
+                         <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Thao tác</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for employee in employees %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ employee.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ employee.name }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ employee.phone }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ employee.email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ employee.position }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if employee.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ 'Đang làm việc' if employee.is_active else 'Đã nghỉ việc' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-3">
+                                <a href="{{ url_for('employee_view', id=employee.id) }}" 
+                                    class="text-blue-600 hover:text-blue-900" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ url_for('employee_edit', id=employee.id) }}" 
+                                    class="text-primary-600 hover:text-primary-900" title="Chỉnh sửa">
+                                     <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ url_for('employee_delete', id=employee.id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?');">
+                                    <button type="submit" class="text-red-600 hover:text-red-900 focus:outline-none" title="Xóa">
+                                         <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div class="flex justify-center space-x-2 mt-6">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('employee_list', page=pagination.prev_num, search=request.args.get('search', '')) }}" 
+            class="btn-pagination">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            Trang trước
+        </a>
+        {% else %}
+         <span class="btn-pagination opacity-50 cursor-not-allowed">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            Trang trước
+        </span>
+        {% endif %}
+
+        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                {% if pagination.page == page_num %}
+                    <span class="btn-pagination bg-primary-600 text-white">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('employee_list', page=page_num, search=request.args.get('search', '')) }}" class="btn-pagination">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span class="btn-pagination">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('employee_list', page=pagination.next_num, search=request.args.get('search', '')) }}" 
+            class="btn-pagination">
+            Trang sau
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </a>
+        {% else %}
+         <span class="btn-pagination opacity-50 cursor-not-allowed">
+            Trang sau
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

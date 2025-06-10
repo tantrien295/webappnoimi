@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch sử dịch vụ - Quản lý Salon{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1 class="h3 mb-0">Lịch sử dịch vụ</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('customer_service_add') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Thêm dịch vụ mới
+        </a>
+    </div>
+</div>
+
+<!-- Tìm kiếm và lọc -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="search" class="form-label">Tìm kiếm</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ request.args.get('search', '') }}" 
+                       placeholder="Tên khách hàng, nhân viên...">
+            </div>
+            <div class="col-md-3">
+                <label for="service_id" class="form-label">Dịch vụ</label>
+                <select class="form-select" id="service_id" name="service_id">
+                    <option value="">Tất cả dịch vụ</option>
+                    {% for service in services %}
+                    <option value="{{ service.id }}" {% if request.args.get('service_id')|int == service.id %}selected{% endif %}>
+                        {{ service.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="date_from" class="form-label">Từ ngày</label>
+                <input type="date" class="form-control" id="date_from" name="date_from"
+                       value="{{ request.args.get('date_from', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="date_to" class="form-label">Đến ngày</label>
+                <input type="date" class="form-control" id="date_to" name="date_to"
+                       value="{{ request.args.get('date_to', '') }}">
+            </div>
+            <div class="col-12 text-end">
+                <a href="{{ url_for('customer_service_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Xóa bộ lọc
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Danh sách lịch sử -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ngày</th>
+                        <th>Khách hàng</th>
+                        <th>Dịch vụ</th>
+                        <th>Nhân viên</th>
+                        <th>Giá</th>
+                        <th>Ghi chú</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for history in histories %}
+                    <tr>
+                        <td>{{ history.id }}</td>
+                        <td>{{ history.service_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('customer_view', id=history.customer_id) }}">
+                                {{ history.customer.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('service_view', id=history.service_id) }}">
+                                {{ history.service.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('employee_view', id=history.employee_id) }}">
+                                {{ history.employee.name }}
+                            </a>
+                        </td>
+                        <td>{{ "{:,.0f}".format(history.price) }}đ</td>
+                        <td>{{ history.notes or '' }}</td>
+                        <td>
+                            <a href="{{ url_for('customer_service_view', id=history.id) }}" 
+                               class="btn btn-sm btn-info" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('customer_service_edit', id=history.id) }}" 
+                               class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-danger" 
+                                    onclick="confirmDelete({{ history.id }}, '{{ history.customer.name }} - {{ history.service.name }}')"
+                                    title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phân trang -->
+        {% if total_pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('customer_service_list', page=page-1, **request.args) }}">Trước</a>
+                </li>
+                {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('customer_service_list', page=p, **request.args) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('customer_service_list', page=page+1, **request.args) }}">Sau</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa lịch sử dịch vụ này?</p>
+                <p class="text-danger mb-0" id="deleteServiceName"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(id, name) {
+    document.getElementById('deleteServiceName').textContent = name;
+    document.getElementById('deleteForm').action = "{{ url_for('customer_service_delete', id=0) }}".replace('0', id);
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %} 

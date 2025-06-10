@@ -1,0 +1,15 @@
+Flask==3.0.2
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-Migrate==4.0.5
+Flask-WTF==1.2.1
+python-dotenv==1.0.1
+Werkzeug==3.0.1
+psycopg==3.2.9
+email-validator==2.1.0.post1
+Flask-Moment==1.0.6
+schedule==1.2.1
+boto3==1.34.69
+python-dateutil==2.8.2
+prisma==0.11.1
+gunicorn==22.0.0

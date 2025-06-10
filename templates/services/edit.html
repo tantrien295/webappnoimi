@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Chỉnh sửa dịch vụ{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">Chỉnh sửa dịch vụ</h1>
+        <a href="{{ url_for('service_view', id=service.id) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Quay lại
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <form method="POST" class="space-y-6" novalidate>
+            <!-- Thông tin cơ bản -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Thông tin cơ bản</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Tên dịch vụ <span class="text-red-500">*</span></label>
+                        <div class="mt-1">
+                            <input type="text" name="name" id="name" value="{{ service.name }}" required
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-black rounded-md p-2">
+                        </div>
+                        <p class="mt-2 text-sm text-red-600 hidden name-invalid-feedback">Vui lòng nhập tên dịch vụ</p>
+                    </div>
+
+                    <div class="col-span-full">
+                        <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
+                        <div class="mt-1">
+                            <textarea name="description" id="description" rows="3"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-black rounded-md p-2 resize-none">{{ service.description or '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3h-3a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Lưu thay đổi
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+
+            // Validate Name
+            const nameInput = document.getElementById('name');
+            const nameFeedback = document.querySelector('.name-invalid-feedback');
+            if (nameInput.value.trim() === '') {
+                nameInput.classList.add('border-red-500');
+                nameFeedback.classList.remove('hidden');
+                isValid = false;
+            } else {
+                nameInput.classList.remove('border-red-500');
+                nameFeedback.classList.add('hidden');
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %} 

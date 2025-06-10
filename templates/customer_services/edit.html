@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Chỉnh sửa dịch vụ - Quản lý Salon{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1 class="h3 mb-0">Chỉnh sửa dịch vụ</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('customer_view', id=customer.id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <!-- Thông tin khách hàng -->
+        <div class="alert alert-info mb-4">
+            <h5 class="alert-heading">Thông tin khách hàng</h5>
+            <p class="mb-0">
+                <strong>Tên:</strong> {{ customer.name }}<br>
+                <strong>Số điện thoại:</strong> {{ customer.phone }}<br>
+                <strong>Ngày sinh:</strong> 
+                {% if customer.birth_date %}
+                    {% if customer.birth_date.year == 1900 %}
+                        {{ customer.birth_date.strftime('%d/%m') }}
+                    {% else %}
+                        {{ customer.birth_date.strftime('%d/%m/%Y') }}
+                    {% endif %}
+                {% else %}
+                    Không có
+                {% endif %}<br>
+                <strong>Địa chỉ:</strong> {{ customer.address or 'Không có' }}<br>
+                <strong>Email:</strong> {{ customer.email or 'Không có' }}
+            </p>
+        </div>
+
+        <form method="POST" class="needs-validation" novalidate>
+            <input type="hidden" name="customer_id" value="{{ customer.id }}">
+            
+            <div class="row g-3">
+                <!-- Dịch vụ -->
+                <div class="col-md-6">
+                    <label for="service_id" class="form-label">Dịch vụ <span class="text-danger">*</span></label>
+                    <select class="form-select" id="service_id" name="service_id" required>
+                        <option value="">Chọn dịch vụ</option>
+                        {% for service in services %}
+                        <option value="{{ service.id }}" {% if service.id == history.service_id %}selected{% endif %}>
+                            {{ service.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Vui lòng chọn dịch vụ
+                    </div>
+                </div>
+
+                <!-- Nhân viên -->
+                <div class="col-md-6">
+                    <label for="employee_id" class="form-label">Nhân viên <span class="text-danger">*</span></label>
+                    <select class="form-select" id="employee_id" name="employee_id" required>
+                        <option value="">Chọn nhân viên</option>
+                        {% for employee in employees %}
+                        <option value="{{ employee.id }}" {% if employee.id == history.employee_id %}selected{% endif %}>
+                            {{ employee.name }} - {{ employee.position }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Vui lòng chọn nhân viên
+                    </div>
+                </div>
+
+                <!-- Ngày thực hiện -->
+                <div class="col-md-6">
+                    <label for="service_date" class="form-label">Ngày thực hiện <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="service_date" name="service_date" 
+                           value="{{ history.service_date.strftime('%Y-%m-%d') }}" required>
+                    <div class="invalid-feedback">
+                        Vui lòng chọn ngày thực hiện
+                    </div>
+                </div>
+
+                <!-- Giá -->
+                <div class="col-md-6">
+                    <label for="price" class="form-label">Giá <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="price" name="price" min="0" step="1000" 
+                               value="{{ history.price }}" required>
+                        <span class="input-group-text">đ</span>
+                    </div>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập giá dịch vụ
+                    </div>
+                </div>
+
+                <!-- Phương thức thanh toán -->
+                <div class="col-md-6">
+                    <label for="payment_method" class="form-label">Phương thức thanh toán <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="payment_method" name="payment_method" 
+                           value="{{ history.payment_method }}" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập phương thức thanh toán
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="col-12">
+                    <label for="notes" class="form-label">Ghi chú</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3">{{ history.notes or '' }}</textarea>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Lưu thay đổi
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Kích hoạt validation của Bootstrap
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Format số tiền khi nhập
+document.getElementById('price').addEventListener('input', function(e) {
+    let value = e.target.value;
+    if (value < 0) {
+        e.target.value = 0;
+    }
+});
+</script>
+{% endblock %} 

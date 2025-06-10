@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Chi tiết khách hàng{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Chi tiết khách hàng</h1>
+            <p class="text-lg text-gray-600 mt-1">{{ customer.name }}</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ url_for('customer_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-arrow-left mr-2 text-gray-500"></i>Quay lại
+            </a>
+            <a href="{{ url_for('customer_edit', id=customer.id) }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <i class="fas fa-edit mr-2"></i>Chỉnh sửa
+            </a>
+        </div>
+    </div>
+
+    <!-- Customer Details -->
+    <div class="space-y-6">
+        <!-- Thông tin cơ bản -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-100 group">
+            <div class="px-6 py-3.5 bg-gradient-to-r from-blue-500 to-blue-600">
+                <h2 class="text-lg font-semibold text-white flex items-center">
+                    <i class="fas fa-user-circle text-blue-100 mr-3"></i>
+                    Thông tin cá nhân
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Họ và tên -->
+                    <div class="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-200 flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-signature text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase">Họ và tên</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ customer.name }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Số điện thoại -->
+                    <div class="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-200 flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-phone-alt text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase">Số điện thoại</p>
+                            <p class="text-lg font-semibold text-blue-700 hover:underline">
+                                <a href="tel:{{ customer.phone }}">{{ customer.phone }}</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if customer.birth_date %}
+                    <!-- Ngày sinh -->
+                    <div class="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-200 flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-birthday-cake text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase">Ngày sinh</p>
+                            <p class="text-lg font-semibold text-gray-900">
+                                {% if customer.birth_date.year == 1900 %}
+                                    {{ customer.birth_date.strftime('%d-%m') }}
+                                {% else %}
+                                    {{ customer.birth_date.strftime('%d-%m-%Y') }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if customer.address %}
+                    <!-- Địa chỉ -->
+                    <div class="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-200 flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-map-marker-alt text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase">Địa chỉ</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ customer.address }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if customer.email %}
+                    <!-- Email -->
+                    <div class="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-200 flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-envelope text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase">Email</p>
+                            <p class="text-lg font-semibold text-blue-700 hover:underline">
+                                <a href="mailto:{{ customer.email }}">{{ customer.email }}</a>
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if customer.notes %}
+                    <!-- Ghi chú -->
+                    <div class="bg-gray-50 rounded-lg p-4 shadow-sm border border-gray-200 flex items-start md:col-span-2">
+                        <div class="flex-shrink-0 w-10 h-10 mt-0.5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-sticky-note text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase">Ghi chú</p>
+                            <p class="text-base text-gray-900 whitespace-pre-line">{{ customer.notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service History for this Customer -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <h2 class="text-lg font-semibold text-gray-800">Lịch sử dịch vụ</h2>
+            <a href="{{ url_for('service_history_add', customer_id=customer.id) }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 w-full sm:w-auto">
+                <i class="fas fa-plus mr-2"></i>Thêm mới
+            </a>
+        </div>
+        
+        {% if pagination.items %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+            {% for history in pagination.items %}
+            <div class="bg-gray-50 rounded-lg shadow-sm border border-gray-200 p-4 space-y-2">
+                <div class="flex justify-between items-center border-b pb-2 mb-2">
+                    <p class="text-sm text-gray-700"><i class="fas fa-calendar-alt mr-1 text-gray-500"></i><span class="font-medium">Ngày làm:</span> {{ history.service_date.strftime('%d-%m-%Y') if history.service_date else 'N/A' }}</p>
+                    <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        {% if history.status == 'completed' %}
+                            bg-green-100 text-green-800
+                        {% elif history.status == 'cancelled' %}
+                            bg-red-100 text-red-800
+                        {% else %}
+                            bg-yellow-100 text-yellow-800
+                        {% endif %}\">
+                        {{ history.status }}
+                    </span>
+                </div>
+                
+                <p class="text-base font-semibold text-primary-700"><i class="fas fa-concierge-bell mr-2 text-gray-500"></i>{{ history.service.name }}</p>
+                <p class="text-sm text-gray-700"><i class="fas fa-user-tie mr-2 text-gray-500"></i><span class="font-medium">Nhân viên:</span> {{ history.employee.name }}</p>
+                <p class="text-sm text-gray-700"><i class="fas fa-dollar-sign mr-2 text-gray-500"></i><span class="font-medium">Giá:</span> <span class="font-bold text-base text-green-600">{{ "{:,.0f}".format(history.price) }} VNĐ</span></p>
+                <p class="text-sm text-gray-700"><i class="fas fa-money-bill-wave mr-2 text-gray-500"></i><span class="font-medium">Thanh toán:</span> {{ history.payment_method }}</p>
+
+                {% if history.images %}
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-xs font-medium text-gray-600 mb-1"><i class="fas fa-image mr-1"></i>Hình ảnh:</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% macro get_image_url(filename) %}
+                            {{ url_for('serve_uploaded_file', filename=filename) }}
+                        {% endmacro %}
+
+                        {% set image_urls_for_modal = [] %}
+                        {% for img in history.images %}
+                            {% set img_filename = img.image_url|split('/')|last %}
+                            {% set _ = image_urls_for_modal.append(get_image_url(img_filename)) %}
+                        {% endfor %}
+                        {% for image in history.images %}
+                            {% set img_filename = image.image_url|split('/')|last %}
+                            <button 
+                                data-image-url="{{ get_image_url(img_filename) }}"
+                                data-image-index="{{ loop.index0 }}"
+                                data-image-array='{{ image_urls_for_modal|tojson|safe }}'
+                                onclick="openImageModal(this)" 
+                                class="focus:outline-none"
+                            >
+                                <img src="{{ get_image_url(img_filename) }}" 
+                                     alt="Hình ảnh dịch vụ" 
+                                     class="h-12 w-12 object-cover rounded-md hover:opacity-75 transition-opacity cursor-pointer">
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if history.notes %}
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-xs font-medium text-gray-600 mb-1"><i class="fas fa-sticky-note mr-1"></i>Ghi chú:</p>
+                    <p class="text-xs text-gray-500 line-clamp-3">{{ history.notes }}</p>
+                </div>
+                {% endif %}
+
+                <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200">
+                    <a href="{{ url_for('service_history_edit', id=history.id) }}" 
+                        class="text-primary-600 hover:text-primary-900 text-lg" title="Chỉnh sửa">
+                         <i class="fas fa-edit"></i>
+                    </a>
+                    <form action="{{ url_for('service_history_delete', id=history.id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lịch sử dịch vụ này?');">
+                        <button type="submit" class="text-primary-600 hover:text-primary-900 focus:outline-none text-lg" title="Xóa">
+                             <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-6 text-center text-gray-500">
+            <p class="text-lg font-semibold">Chưa có lịch sử dịch vụ nào cho khách hàng này.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center">
+    <div class="relative bg-white rounded-lg max-w-[80vw] max-h-[90vh] overflow-auto flex flex-col">
+        <!-- Close button -->
+        <button class="absolute top-3 right-3 text-white bg-gray-800 rounded-full p-2 z-10 hover:bg-gray-700 focus:outline-none" onclick="closeImageModal()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Main image display -->
+        <div class="flex items-center justify-center bg-gray-900">
+            <img id="modalImage" src="" alt="Hình ảnh dịch vụ" class="max-w-[90vw] max-h-[90vh] object-contain rounded-md shadow-lg">
+        </div>
+
+        <!-- Navigation controls -->
+        <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between items-center px-4">
+            <button class="text-white text-3xl opacity-75 hover:opacity-100 transition-opacity focus:outline-none" onclick="navigateImage(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="text-white text-3xl opacity-75 hover:opacity-100 transition-opacity focus:outline-none" onclick="navigateImage(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Full page overlay for loading -->
+<div id="fullPageOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center hidden">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
+</div>
+
+{% block scripts %}
+<script>
+    (function() {
+        let currentImageIndex = 0;
+        let currentImageArray = [];
+
+        window.openImageModal = function(button) {
+            const imageUrl = button.dataset.imageUrl;
+            const imageIndex = parseInt(button.dataset.imageIndex);
+            currentImageArray = JSON.parse(button.dataset.imageArray);
+
+            currentImageIndex = imageIndex;
+            document.getElementById('modalImage').src = imageUrl;
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        window.navigateImage = function(direction) {
+            currentImageIndex += direction;
+            if (currentImageIndex < 0) {
+                currentImageIndex = currentImageArray.length - 1;
+            } else if (currentImageIndex >= currentImageArray.length) {
+                currentImageIndex = 0;
+            }
+            document.getElementById('modalImage').src = currentImageArray[currentImageIndex];
+        }
+
+        window.closeImageModal = function() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+    })();
+
+    // Handle delete form submission with a modal
+    document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            if (confirm('Bạn có chắc chắn muốn xóa lịch sử dịch vụ này?')) {
+                this.submit(); // If confirmed, submit the form
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% endblock %} 

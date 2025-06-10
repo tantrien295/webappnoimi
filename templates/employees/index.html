@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Danh sách nhân viên{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">Danh sách nhân viên</h1>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ url_for('employee_add') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <i class="fas fa-plus mr-2"></i>Thêm mới
+            </a>
+            <button type="button" onclick="exportTableToCSV('employees_table', 'danh_sach_nhan_vien.csv')" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <i class="fas fa-file-export mr-2"></i>Xuất CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- Employee List -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for employee in employees %}
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">{{ employee.name }}</h2>
+                    <span class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">ID: {{ employee.id }}</span>
+                </div>
+                <div class="space-y-2 text-gray-700 mb-4">
+                    <p class="flex items-center text-sm">
+                        <svg class="h-4 w-4 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                        </svg>
+                        Số điện thoại: {{ employee.phone }}
+                    </p>
+                    {% if employee.email %}
+                    <p class="flex items-center text-sm">
+                        <svg class="h-4 w-4 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0018 4H2a2 2 0 00-.003 1.884z" />
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        Email: {{ employee.email }}
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <div class="flex items-center space-x-3">
+                        <a href="{{ url_for('employee_view', id=employee.id) }}"
+                           class="text-blue-600 hover:text-blue-800 flex items-center" title="Xem chi tiết">
+                            <svg class="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            </svg>
+                            Xem
+                        </a>
+                        <a href="{{ url_for('employee_edit', id=employee.id) }}"
+                           class="text-indigo-600 hover:text-indigo-800 flex items-center" title="Chỉnh sửa">
+                            <svg class="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                            </svg>
+                            Sửa
+                        </a>
+                        <button type="button" class="text-red-600 hover:text-red-800 flex items-center delete-button" data-employee-id="{{ employee.id }}" data-employee-name="{{ employee.name }}" title="Xóa">
+                            <svg class="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center text-gray-500">
+            Không có nhân viên nào.
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Xác nhận xóa</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Bạn có chắc chắn muốn xóa nhân viên <span id="employee-name-to-delete" class="font-semibold"></span>?
+                        <br/>Lưu ý: Hành động này không thể hoàn tác!
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3 grid grid-cols-2 gap-4">
+                    <button id="cancel-delete" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:text-sm">
+                        Hủy
+                    </button>
+                    <button id="confirm-delete" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm">
+                        Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div class="flex justify-center space-x-2 mt-6">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('employee_list', page=pagination.prev_num, search=request.args.get('search', '')) }}"
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Trang trước
+        </a>
+        {% else %}
+        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white opacity-50 cursor-not-allowed">
+            <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Trang trước
+        </span>
+        {% endif %}
+
+        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                {% if pagination.page == page_num %}
+                    <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-500 text-white text-sm font-medium rounded-md">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('employee_list', page=page_num, search=request.args.get('search', '')) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700">...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('employee_list', page=pagination.next_num, search=request.args.get('search', '')) }}"
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Trang sau
+            <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+        {% else %}
+        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white opacity-50 cursor-not-allowed">
+            Trang sau
+            <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        const deleteModal = document.getElementById('delete-modal');
+        const cancelDeleteButton = document.getElementById('cancel-delete');
+        const confirmDeleteButton = document.getElementById('confirm-delete');
+        const employeeNameToDelete = document.getElementById('employee-name-to-delete');
+        let formToSubmit = null;
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                formToSubmit = this.closest('form');
+                const employeeName = this.dataset.employeeName;
+                employeeNameToDelete.textContent = employeeName;
+                deleteModal.classList.remove('hidden');
+            });
+        });
+
+        cancelDeleteButton.addEventListener('click', function() {
+            deleteModal.classList.add('hidden');
+            formToSubmit = null;
+        });
+
+        confirmDeleteButton.addEventListener('click', function() {
+            if (formToSubmit) {
+                formToSubmit.submit();
+            }
+            deleteModal.classList.add('hidden');
+            formToSubmit = null;
+        });
+
+        deleteModal.addEventListener('click', function(event) {
+            if (event.target === deleteModal) {
+                deleteModal.classList.add('hidden');
+                formToSubmit = null;
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Đăng nhập{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center">
+    <div class="card max-w-md w-full">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Đăng nhập</h2>
+        
+        <form method="POST" class="space-y-6">
+            {{ form.hidden_tag() }}
+            
+            <div>
+                {{ form.username.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.username(class="input-field") }}
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.password.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.password(class="input-field") }}
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    {{ form.remember_me(class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded") }}
+                    {{ form.remember_me.label(class="ml-2 block text-sm text-gray-700") }}
+                </div>
+            </div>
+
+            <div>
+                {{ form.submit(class="btn-primary w-full") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

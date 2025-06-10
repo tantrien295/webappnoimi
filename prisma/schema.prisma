@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Định nghĩa các Model của database của bạn
+// Được chuyển đổi từ file init.sql
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(50)
+  description String?   @db.Text
+  createdAt   DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime? @map("updated_at") @db.Timestamp(0)
+
+  @@map("category") // Ánh xạ tên model với tên bảng trong DB
+}
+
+model Customer {
+  id             Int       @id @default(autoincrement())
+  name           String    @db.VarChar(100)
+  phone          String    @db.VarChar(20)
+  email          String?   @db.VarChar(120) @unique // Email thường là unique
+  birthDate      DateTime? @map("birth_date") @db.Date
+  address        String?   @db.Text
+  notes          String?   @db.Text
+  createdAt      DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt      DateTime? @map("updated_at") @db.Timestamp(0)
+  serviceHistory ServiceHistory[] // Mối quan hệ: Một Customer có nhiều ServiceHistory
+
+  @@map("customer")
+}
+
+model Employee {
+  id             Int       @id @default(autoincrement())
+  name           String    @db.VarChar(100)
+  hireDate       DateTime? @map("hire_date") @db.Date
+  status         String?   @db.VarChar(20)
+  createdAt      DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt      DateTime? @map("updated_at") @db.Timestamp(0)
+  serviceHistory ServiceHistory[] // Mối quan hệ: Một Employee có nhiều ServiceHistory
+
+  @@map("employee")
+}
+
+model Service {
+  id             Int       @id @default(autoincrement())
+  name           String    @db.VarChar(100)
+  price          Float     @db.DoublePrecision
+  duration       Int
+  description    String?   @db.Text
+  notes          String?   @db.Text
+  status         String?   @db.VarChar(20)
+  createdAt      DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt      DateTime? @map("updated_at") @db.Timestamp(0)
+  serviceHistory ServiceHistory[] // Mối quan hệ: Một Service có nhiều ServiceHistory
+
+  @@map("service")
+}
+
+model ServiceHistory {
+  id            Int       @id @default(autoincrement())
+  customerId    Int       @map("customer_id")
+  serviceId     Int       @map("service_id")
+  employeeId    Int       @map("employee_id")
+  serviceDate   DateTime  @map("service_date") @db.Timestamp(0) // NOT NULL
+  price         Float     @db.DoublePrecision // NOT NULL
+  paymentMethod String    @map("payment_method") @db.VarChar(20) // NOT NULL
+  notes         String?   @db.Text
+  createdAt     DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
+
+  // Định nghĩa mối quan hệ (Foreign Keys)
+  customer       Customer              @relation(fields: [customerId], references: [id])
+  service        Service               @relation(fields: [serviceId], references: [id])
+  employee       Employee              @relation(fields: [employeeId], references: [id])
+  serviceHistoryImage ServiceHistoryImage[] // Mối quan hệ: Một ServiceHistory có nhiều ServiceHistoryImage
+
+  @@map("service_history")
+}
+
+model ServiceHistoryImage {
+  id             Int       @id @default(autoincrement())
+  serviceHistoryId Int       @map("service_history_id")
+  imageUrl       String    @map("image_url") @db.VarChar(255)
+  createdAt      DateTime? @map("created_at") @db.Timestamp(0)
+
+  // Định nghĩa mối quan hệ (Foreign Key)
+  serviceHistory ServiceHistory @relation(fields: [serviceHistoryId], references: [id])
+
+  @@map("service_history_image")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique @db.VarChar(80)
+  email        String    @unique @db.VarChar(120)
+  passwordHash String?   @map("password_hash") @db.VarChar(256)
+  role         String?   @db.VarChar(20)
+  createdAt    DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime? @map("updated_at") @db.Timestamp(0)
+
+  @@map("user") // Ánh xạ tên model với tên bảng trong DB (vì "user" là từ khóa SQL)
+}

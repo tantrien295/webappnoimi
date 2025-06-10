@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Chi tiết danh mục - Quản lý Salon{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1 class="h3 mb-0">Chi tiết danh mục</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('category_list') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+        <a href="{{ url_for('category_edit', category_id=category.id) }}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Chỉnh sửa
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Thông tin cơ bản -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thông tin cơ bản</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 150px;">ID:</th>
+                        <td>{{ category.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tên danh mục:</th>
+                        <td>{{ category.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Mô tả:</th>
+                        <td>{{ category.description or 'Không có mô tả' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Trạng thái:</th>
+                        <td>
+                            {% if category.status == 'active' %}
+                                <span class="badge bg-success">Đang hoạt động</span>
+                            {% else %}
+                                <span class="badge bg-danger">Không hoạt động</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ngày tạo:</th>
+                        <td>{{ category.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Cập nhật lần cuối:</th>
+                        <td>{{ category.updated_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin bổ sung -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thông tin bổ sung</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 150px;">Số dịch vụ:</th>
+                        <td>{{ category.services|length }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tổng doanh thu:</th>
+                        <td>{{ "{:,.0f}".format(total_revenue) }}đ</td>
+                    </tr>
+                    <tr>
+                        <th>Số lần sử dụng:</th>
+                        <td>{{ total_usage }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ghi chú -->
+{% if category.notes %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Ghi chú</h5>
+    </div>
+    <div class="card-body">
+        <p class="mb-0">{{ category.notes }}</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Danh sách dịch vụ -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Danh sách dịch vụ</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên dịch vụ</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in category.services %}
+                    <tr>
+                        <td>{{ service.id }}</td>
+                        <td>
+                            <a href="{{ url_for('service_view', service_id=service.id) }}">
+                                {{ service.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('service_view', service_id=service.id) }}" 
+                               class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('service_edit', service_id=service.id) }}" 
+                               class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">Chưa có dịch vụ nào</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

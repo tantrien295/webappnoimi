@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Welcome Section -->
+    <div class="bg-gradient-to-r from-primary-600 to-primary-800 rounded-lg p-10 flex items-center justify-center">
+        <div class="py-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 whitespace-pre-line line-clamp-2 text-center">{{ settings.welcome_title }}</h1>
+            <p class="text-primary-100 text-lg whitespace-pre-line line-clamp-2 text-center">{{ settings.welcome_subtitle }}</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Customers -->
+        <a href="{{ url_for('customer_list') }}" class="block h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 text-white hover:to-blue-700 transition-colors duration-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100">Tổng khách hàng</p>
+                    <h3 class="text-3xl font-bold">{{ total_customers }}</h3>
+                </div>
+                <i class="fas fa-users text-4xl text-blue-200"></i>
+            </div>
+        </a>
+
+        <!-- Total Employees -->
+        <a href="{{ url_for('employee_list') }}" class="block h-full bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-6 text-white hover:to-green-700 transition-colors duration-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100">Tổng nhân viên</p>
+                    <h3 class="text-3xl font-bold">{{ total_employees }}</h3>
+                </div>
+                <i class="fas fa-user-tie text-4xl text-green-200"></i>
+            </div>
+        </a>
+
+        <!-- Total Services -->
+        <a href="{{ url_for('service_list') }}" class="block h-full bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-6 text-white hover:to-purple-700 transition-colors duration-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100">Tổng dịch vụ</p>
+                    <h3 class="text-3xl font-bold">{{ total_services }}</h3>
+                </div>
+                <i class="fas fa-cut text-4xl text-purple-200"></i>
+            </div>
+        </a>
+
+        <!-- Total Service History -->
+        <a href="{{ url_for('service_history_list') }}" class="block h-full bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-6 text-white hover:to-orange-700 transition-colors duration-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100">Tổng lịch sử</p>
+                    <h3 class="text-3xl font-bold">{{ total_service_history }}</h3>
+                </div>
+                <i class="fas fa-history text-4xl text-orange-200"></i>
+            </div>
+        </a>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Quản lý khách hàng -->
+        <a href="{{ url_for('customer_list') }}" class="card hover:shadow-lg transition-shadow duration-300 block">
+            <div class="p-6 h-full flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Quản lý khách hàng</h3>
+                    <i class="fas fa-users text-2xl text-primary-600"></i>
+                </div>
+                <p class="text-gray-600 mb-4">Thêm, sửa, xóa và xem thông tin khách hàng</p>
+                <div class="btn-primary w-full text-center">
+                    <i class="fas fa-arrow-right mr-2"></i>Xem danh sách
+                </div>
+            </div>
+        </a>
+
+        <!-- Quản lý nhân viên -->
+        <a href="{{ url_for('employee_list') }}" class="card hover:shadow-lg transition-shadow duration-300 block">
+            <div class="p-6 h-full flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Quản lý nhân viên</h3>
+                    <i class="fas fa-user-tie text-2xl text-primary-600"></i>
+                </div>
+                <p class="text-gray-600 mb-4">Thêm, sửa, xóa và xem thông tin nhân viên</p>
+                <div class="btn-primary w-full text-center">
+                    <i class="fas fa-arrow-right mr-2"></i>Xem danh sách
+                </div>
+            </div>
+        </a>
+
+        <!-- Quản lý dịch vụ -->
+        <a href="{{ url_for('service_list') }}" class="card hover:shadow-lg transition-shadow duration-300 block">
+            <div class="p-6 h-full flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Quản lý dịch vụ</h3>
+                    <i class="fas fa-cut text-2xl text-primary-600"></i>
+                </div>
+                <p class="text-gray-600 mb-4">Thêm, sửa, xóa và xem thông tin dịch vụ</p>
+                <div class="btn-primary w-full text-center">
+                    <i class="fas fa-arrow-right mr-2"></i>Xem danh sách
+                </div>
+            </div>
+        </a>
+
+        <!-- Lịch sử dịch vụ -->
+        <a href="{{ url_for('service_history_list') }}" class="card hover:shadow-lg transition-shadow duration-300 block">
+            <div class="p-6 h-full flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Lịch sử dịch vụ</h3>
+                    <i class="fas fa-history text-2xl text-primary-600"></i>
+                </div>
+                <p class="text-gray-600 mb-4">Xem và quản lý lịch sử dịch vụ đã thực hiện</p>
+                <div class="btn-primary w-full text-center">
+                    <i class="fas fa-arrow-right mr-2"></i>Xem danh sách
+                </div>
+            </div>
+        </a>
+
+        <!-- Thống kê doanh thu -->
+        <a href="{{ url_for('revenue') }}" class="card hover:shadow-lg transition-shadow duration-300 block">
+            <div class="p-6 h-full flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Thống kê doanh thu</h3>
+                    <i class="fas fa-chart-line text-2xl text-primary-600"></i>
+                </div>
+                <p class="text-gray-600 mb-4">Xem báo cáo và thống kê doanh thu</p>
+                <div class="btn-primary w-full text-center">
+                    <i class="fas fa-arrow-right mr-2"></i>Xem báo cáo
+                </div>
+            </div>
+        </a>
+
+        <!-- Cài đặt ứng dụng -->
+        <a href="{{ url_for('settings_page') }}" class="card hover:shadow-lg transition-shadow duration-300 block">
+            <div class="p-6 h-full flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Cài đặt ứng dụng</h3>
+                    <i class="fas fa-cogs text-2xl text-primary-600"></i>
+                </div>
+                <p class="text-gray-600 mb-4">Quản lý các cài đặt chung của ứng dụng</p>
+                <div class="btn-primary w-full text-center">
+                    <i class="fas fa-arrow-right mr-2"></i>Đi đến cài đặt
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %} 

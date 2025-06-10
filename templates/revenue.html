@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Thống kê doanh thu{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Thống kê doanh thu</h1>
+        <a href="{{ url_for('index') }}" class="btn-secondary">
+            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow p-4">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+                <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Từ ngày</label>
+                <input type="date" name="start_date" id="start_date" 
+                       value="{{ request.args.get('start_date', '') }}" class="form-input w-full">
+            </div>
+            <div>
+                <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Đến ngày</label>
+                <input type="date" name="end_date" id="end_date" 
+                       value="{{ request.args.get('end_date', '') }}" class="form-input w-full">
+            </div>
+            <div>
+                <label for="service" class="block text-sm font-medium text-gray-700 mb-1">Dịch vụ</label>
+                <select name="service" id="service" class="form-select w-full">
+                    <option value="">Tất cả</option>
+                    {% for s in services %}
+                    <option value="{{ s.id }}" {% if request.args.get('service')|int == s.id %}selected{% endif %}>
+                        {{ s.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="md:col-span-3 flex justify-end gap-2">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-filter mr-2"></i>Lọc
+                </button>
+                 <a href="{{ url_for('revenue') }}" class="btn-secondary">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Làm mới
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Tổng doanh thu -->
+        <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg p-6 text-white shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-primary-100 text-sm font-medium">Tổng doanh thu</p>
+                    <p class="text-2xl font-bold mt-1">
+                        {{ "{:,.0f}".format(total_revenue) }} VNĐ
+                    </p>
+                </div>
+                <div class="p-3 bg-primary-700 bg-opacity-50 rounded-full">
+                     <i class="fas fa-money-bill-wave text-2xl text-white"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Số lượng dịch vụ -->
+        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-6 text-white shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm font-medium">Số lượng dịch vụ</p>
+                    <p class="text-2xl font-bold mt-1">
+                        {{ total_services }}
+                    </p>
+                </div>
+                <div class="p-3 bg-green-700 bg-opacity-50 rounded-full">
+                    <i class="fas fa-list text-2xl text-white"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doanh thu trung bình -->
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-6 text-white shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100 text-sm font-medium">Doanh thu trung bình</p>
+                    <p class="text-2xl font-bold mt-1">
+                        {{ "{:,.0f}".format(average_revenue) }} VNĐ
+                    </p>
+                </div>
+                <div class="p-3 bg-purple-700 bg-opacity-50 rounded-full">
+                    <i class="fas fa-chart-line text-2xl text-white"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue by Service -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <h2 class="text-lg font-semibold text-gray-900 p-6 border-b border-gray-200">Doanh thu theo dịch vụ</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Dịch vụ</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Số lượng</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Doanh thu</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tỷ lệ</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for service in revenue_by_service %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ service.name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ service.count }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ "{:,.0f}".format(service.total) }} VNĐ
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {% set percentage = (service.total / total_revenue * 100) if total_revenue > 0 else 0 %}
+                            {{ "%.1f"|format(percentage) }}%
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Revenue by Employee -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <h2 class="text-lg font-semibold text-gray-900 p-6 border-b border-gray-200">Doanh thu theo nhân viên</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nhân viên</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Số lượng</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Doanh thu</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tỷ lệ</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for employee in revenue_by_employee %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ employee.name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ employee.count }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ "{:,.0f}".format(employee.total) }} VNĐ
+                        </td>
+                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {% set percentage = (employee.total / total_revenue * 100) if total_revenue > 0 else 0 %}
+                            {{ "%.1f"|format(percentage) }}%
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

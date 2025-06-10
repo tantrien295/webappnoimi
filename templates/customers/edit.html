@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Chỉnh sửa khách hàng{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">Chỉnh sửa khách hàng</h1>
+        <a href="{{ url_for('customer_view', id=customer.id) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Quay lại
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <form method="POST" class="space-y-6" novalidate>
+            <!-- Thông tin cơ bản -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Thông tin cơ bản</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Họ và tên <span class="text-red-500">*</span></label>
+                        <div class="mt-1">
+                            <input type="text" name="name" id="name" value="{{ customer.name }}" required
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2">
+                        </div>
+                        <p class="mt-2 text-sm text-red-600 hidden name-invalid-feedback">Vui lòng nhập họ và tên</p>
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700">Số điện thoại <span class="text-red-500">*</span></label>
+                        <div class="mt-1">
+                            <input type="tel" name="phone" id="phone" value="{{ customer.phone }}" required
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2">
+                        </div>
+                        <p class="mt-2 text-sm text-red-600 hidden phone-invalid-feedback">Vui lòng nhập số điện thoại</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Ngày sinh</label>
+                        <div class="mt-1 flex space-x-2">
+                            <!-- Ngày -->
+                            <div class="w-1/3">
+                                <select name="birth_day" id="birth_day" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-black rounded-md p-2">
+                                    <option value="">Ngày</option>
+                                    {% for day in range(1, 32) %}
+                                        <option value="{{ '%02d'|format(day) }}" {% if customer.birth_date and customer.birth_date.day == day %}selected{% endif %}>{{ day }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- Tháng -->
+                            <div class="w-1/3">
+                                <select name="birth_month" id="birth_month" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-black rounded-md p-2">
+                                    <option value="">Tháng</option>
+                                    {% for month in range(1, 13) %}
+                                        <option value="{{ '%02d'|format(month) }}" {% if customer.birth_date and customer.birth_date.month == month %}selected{% endif %}>{{ month }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- Năm -->
+                            <div class="w-1/3">
+                                <input type="number" name="birth_year" id="birth_year" placeholder="Năm" 
+                                    min="1900" max="{{ now.year }}" 
+                                    value="{{ customer.birth_date.year if customer.birth_date and customer.birth_date.year != 1900 else '' }}"
+                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-black rounded-md p-2">
+                            </div>
+                        </div>
+                        <input type="hidden" name="birth_date" id="birth_date" value="{{ customer.birth_date.strftime('%d-%m-%Y') if customer.birth_date else '' }}">
+                        <p class="mt-1 text-sm text-red-600 hidden birth_date-invalid-feedback">Vui lòng chọn đầy đủ ngày và tháng</p>
+                    </div>
+
+                    <div class="col-span-full">
+                        <label for="address" class="block text-sm font-medium text-gray-700">Địa chỉ</label>
+                        <div class="mt-1">
+                            <textarea name="address" id="address" rows="3"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 resize-none">{{ customer.address or '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin bổ sung -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Thông tin bổ sung</h2>
+                <div class="grid grid-cols-1">
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-gray-700">Ghi chú</label>
+                        <div class="mt-1">
+                            <textarea name="notes" id="notes" rows="4"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 resize-none">{{ customer.notes or '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3h-3a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Lưu thay đổi
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+
+            // Validate Name
+            const nameInput = document.getElementById('name');
+            const nameFeedback = document.querySelector('.name-invalid-feedback');
+            if (nameInput.value.trim() === '') {
+                nameInput.classList.add('border-red-500');
+                nameFeedback.classList.remove('hidden');
+                isValid = false;
+            } else {
+                nameInput.classList.remove('border-red-500');
+                nameFeedback.classList.add('hidden');
+            }
+
+            // Validate Phone
+            const phoneInput = document.getElementById('phone');
+            const phoneFeedback = document.querySelector('.phone-invalid-feedback');
+            if (phoneInput.value.trim() === '') {
+                phoneInput.classList.add('border-red-500');
+                phoneFeedback.classList.remove('hidden');
+                isValid = false;
+            } else {
+                phoneInput.classList.remove('border-red-500');
+                phoneFeedback.classList.add('hidden');
+            }
+
+            // Validate Birth Date
+            const birthDay = document.getElementById('birth_day').value;
+            const birthMonth = document.getElementById('birth_month').value;
+            const birthYearInput = document.getElementById('birth_year');
+            let birthYear = birthYearInput.value;
+            const birthDateInput = document.getElementById('birth_date');
+            const birthDateFeedback = document.querySelector('.birth_date-invalid-feedback');
+            
+            // Nếu có điền ngày hoặc tháng nhưng không điền năm, tự động đặt là 1900
+            if ((birthDay || birthMonth) && !birthYear) {
+                birthYear = '1900';
+                birthYearInput.value = '1900';
+            }
+            
+            // Nếu có ít nhất một trường được điền
+            if (birthDay || birthMonth || birthYear) {
+                // Kiểm tra nếu thiếu ngày hoặc tháng
+                if (!birthDay || !birthMonth) {
+                    birthDateFeedback.classList.remove('hidden');
+                    birthDateFeedback.textContent = 'Vui lòng chọn đầy đủ ngày và tháng';
+                    isValid = false;
+                } else {
+                    // Nếu đủ thông tin, cập nhật vào trường ẩn
+                    birthDateInput.value = `${birthDay}-${birthMonth}-${birthYear || '1900'}`;
+                    birthDateFeedback.classList.add('hidden');
+                }
+            } else {
+                // Nếu không điền gì cả, cho phép submit
+                birthDateFeedback.classList.add('hidden');
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+
+        // Xử lý sự kiện khi năm thay đổi
+        document.getElementById('birth_year').addEventListener('input', function(e) {
+            // Giới hạn độ dài tối đa là 4 chữ số
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+            // Đảm bảo giá trị nằm trong khoảng hợp lệ
+            const currentYear = new Date().getFullYear();
+            if (this.value > currentYear) {
+                this.value = currentYear;
+            } else if (this.value < 1900) {
+                this.value = 1900;
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Chi tiết dịch vụ - Quản lý Salon{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1 class="h3 mb-0">Chi tiết dịch vụ</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('customer_view', id=customer.id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+        <a href="{{ url_for('customer_service_edit', id=history.id) }}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Chỉnh sửa
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Thông tin khách hàng -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thông tin khách hàng</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 150px;">Tên:</th>
+                        <td>{{ customer.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Số điện thoại:</th>
+                        <td>{{ customer.phone }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ngày sinh:</th>
+                        <td>
+                            {% if customer.birth_date %}
+                                {% if customer.birth_date.year == 1900 %}
+                                    {{ customer.birth_date.strftime('%d/%m') }}
+                                {% else %}
+                                    {{ customer.birth_date.strftime('%d/%m/%Y') }}
+                                {% endif %}
+                            {% else %}
+                                Không có
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Địa chỉ:</th>
+                        <td>{{ customer.address or 'Không có' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ customer.email or 'Không có' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin dịch vụ -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thông tin dịch vụ</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 150px;">ID:</th>
+                        <td>{{ history.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Dịch vụ:</th>
+                        <td>
+                            <a href="{{ url_for('service_view', id=history.service_id) }}">
+                                {{ history.service.name }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Nhân viên:</th>
+                        <td>
+                            <a href="{{ url_for('employee_view', id=history.employee_id) }}">
+                                {{ history.employee.name }} - {{ history.employee.position }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ngày thực hiện:</th>
+                        <td>{{ history.service_date.strftime('%d/%m/%Y') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Giá:</th>
+                        <td>{{ "{:,.0f}".format(history.price) }}đ</td>
+                    </tr>
+                    <tr>
+                        <th>Thanh toán:</th>
+                        <td>{{ history.payment_method }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ghi chú:</th>
+                        <td>{{ history.notes or 'Không có' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,17 @@
+{
+  "name": "webappnoimi",
+  "version": "1.0.0",
+  "description": "Salon Management System",
+  "scripts": {
+    "build": "tailwindcss -i ./static/src/input.css -o ./static/css/main.css --watch"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "prisma": "^6.9.0",
+    "tailwindcss": "^3.4.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.9.0"
+  }
+}

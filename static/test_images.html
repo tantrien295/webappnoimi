@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Images</title>
+</head>
+<body>
+    <h1>Test Image Paths</h1>
+    
+    <h2>Direct Path</h2>
+    <img src="/static/uploads/z6621252770426_90891c76f9bc2bc34bafde9ead421a2a.jpg" 
+         style="max-width: 300px; border: 1px solid #ccc; margin: 10px 0;"
+         onerror="this.src='/static/img/no-image.png'"
+         alt="Test Image 1">
+    <p>/static/uploads/z6621252770426_90891c76f9bc2bc34bafde9ead421a2a.jpg</p>
+    
+    <h2>URL For</h2>
+    <img src="{{ url_for('static', filename='uploads/z6621261314997_11238e5483e31a5439aede4a579891ca.jpg') }}" 
+         style="max-width: 300px; border: 1px solid #ccc; margin: 10px 0;"
+         onerror="this.src='{{ url_for(\'static\', filename=\'img/no-image.png\') }}'"
+         alt="Test Image 2">
+    <p>{{ url_for('static', filename='uploads/z6621261314997_11238e5483e31a5439aede4a579891ca.jpg') }}</p>
+    
+    <h2>No Image Fallback</h2>
+    <img src="/static/img/no-image.png" 
+         style="max-width: 300px; border: 1px solid #ccc; margin: 10px 0;"
+         alt="No Image">
+    <p>/static/img/no-image.png</p>
+</body>
+</html>
